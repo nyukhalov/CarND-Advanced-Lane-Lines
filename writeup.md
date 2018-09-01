@@ -229,9 +229,19 @@ I implemented this step in the function `pipeline()` (line 65 to 92). Here is an
 
 ### Pipeline (video)
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+#### 1. Smoothing.
 
-Here's a [link to my video result](./project_video.mp4)
+In order to smooth lines and prevent jittering I had to keep some state between pipeline calls. I've implemented the class `LineDetector` which keeps N (configurable) recent fits. Each time the `pipeline` function is called it updates the state of line detectors of the left and right lines.
+
+During each update a line detector uses recent fits to calculate
+
+- `best_fit` - polynomial coefficients averaged over the last N iterations
+- `radius_of_curvature` - radius of curvature of the line in meters
+- `line_base_pos` - distance in meters of vehicle center from the line
+
+#### 2. Project video.
+
+Here's a [link to my video result](./output_videos/project_video.mp4)
 
 ---
 
