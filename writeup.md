@@ -160,7 +160,7 @@ The `find_lane_pixels` function combines these techniques in the following manne
 - take a histogram across the bottom part of the image
 - find the histogram peaks to identify starting positions of the left and right lines
 - run sliding window search for each line starting from the positions found in the previous step
-- accumulate "active" pixels (pixels within a sliding window on each iteration) for the left and right lines separately
+- accumulate activated pixels (pixels within a sliding window on each iteration) for the left and right lines separately
 - find 2nd order polynomial coefficients using the `np.polyfit` function
 
 Here're a visualization of the algorithm:
@@ -239,7 +239,28 @@ During each update a line detector uses recent fits to calculate
 - `radius_of_curvature` - radius of curvature of the line in meters
 - `line_base_pos` - distance in meters of vehicle center from the line
 
-#### 2. Project video.
+#### 2. Sanity check
+
+Before updating the state of `LineDetector`, we should check that the detection makes sense. To do so I've implemented the `sanity_check` function.
+
+It takes in the left and right lines and outputs whether they're correct or not.
+The function checks that the lines exist, separated by approximately the right distance horizontally, and roughly parallel.
+
+If the santy check fails the `pipeline` does not update the `LineDetector`.
+
+#### 3. Look-Ahead Filter
+
+Once I've found valid lane lines in one frame of video I'll use the look-ahead filter to not search blindly in the next frame. If the filter fails to find lines I simply fallback to using the sliding window technique.
+
+The `search_around_poly` function takes in a binary warped image along with fits of the left and right lines. It then selects activated pixels within configurable `margin` of the left and right lines.
+
+```python
+def search_around_poly(binary_warped, left_fit, right_fit):
+	# ...
+	return left_line, right_line
+```
+
+#### 4. Project video.
 
 Here's a [link to my video result](./output_videos/project_video.mp4)
 
