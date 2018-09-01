@@ -76,14 +76,19 @@ I applied the `undistort` function to the test image and obtained this result:
 
 ### Pipeline (single images)
 
-#### 1. Provide an example of a distortion-corrected image.
+#### 1. Distortion correction.
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
+The first step of my pipeline of to applying distortion correction to the input image. I used the method `undistort` described above. 
+
+Here's an example of its output:
+
 ![image](./output_images/undistort-single.jpg)
 
-#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+#### 2. Color and Gradient thresholding.
 
-The `filter_color_n_gradient` method takes in an image and uses a combination of color and gradient thresholds to generate a binary image.
+The next step of the pipeline is performing color transforms, gradients or other methods to create a thresholded binary image.
+
+The `filter_color_n_gradient` function takes in an image and uses a combination of color and gradient thresholds to generate a binary image.
 
 After trying different combinations of color thresholding I found that thresholding the HLS-S channel works pretty well in good lighting conditions, but does not work well in shadows. Also, the S channel selects too many features under some lighting conditions.
 
@@ -102,39 +107,48 @@ def filter_color_n_gradient(img):
    	return filtered
 ```
 
-Here's an example of my output for this step applied to the `./test_images/test1.jpg` image:
+Here's an example of this step's output:
 
 ![alt text](./output_images/thresh-single.jpg)
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The `birds_eye_view` function takes in an image and applies perspective transform to the image using the OpenCV `cv2.warpPerspective` function.
+
+In order to execute the `cv2.warpPerspective` function I needed to calculate a perspective tranformation matrix `M`. OpenCV provides the `cv2.getPerspectiveTransform` function to do so. The function takes in two parameters `src` and `dest` - source and destination points. I chose the hardcode the source and destination points in the following manner:
 
 ```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+top_y = 450
+
+src = np.float32([
+    [218,  img_height], # bottom left
+    [594,  top_y],      # top left
+    [689,  top_y],      # top right
+    [1109, img_height]  # bottom right
+])
+
+lwx = 300  # left  warped x-coordinate
+rwx = 1020 # right warped x-coordinate
+dst = np.float32([
+    [lwx, img_height], # bottom left
+    [lwx, 0],          # top left
+    [rwx, 0],          # top right
+    [rwx, img_height]  # bottom right
+])
 ```
 
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 218, 720      | 300, 720      | 
+| 594, 450      | 300, 0        |
+| 689, 450      | 1020, 0       |
+| 1109, 720     | 1020, 720     |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![alt text](./output_images/conf-perspective-tranform.jpg)
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
