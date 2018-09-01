@@ -110,6 +110,7 @@ def filter_color_n_gradient(img):
 Here's an example of this step's output:
 
 ![alt text](./output_images/thresh-single.jpg)
+![alt text](./output_images/thresh.jpg)
 
 #### 3. Perspective transform.
 
