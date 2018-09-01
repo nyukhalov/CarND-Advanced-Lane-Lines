@@ -1,10 +1,6 @@
-## Writeup Template
+# Advanced Lane Finding Project
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Advanced Lane Finding Project**
+## Overview
 
 The goals / steps of this project are the following:
 
@@ -39,17 +35,44 @@ The goals / steps of this project are the following:
 
 You're reading it!
 
+### Source code and output files.
+
+The whole project was implemented using the IPython notebook located in the './Project2.ipynb' file. The output images and video are located in the `./output_images/` and `./output_videos/` directories respectively.
+
 ### Camera Calibration
 
-#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
+The `calibrate` function takes in a sequence of chessboard images, and the chessboard's x and y sizes.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb" (or in lines # through # of the file called `some_file.py`).  
+It starts by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image. 
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+Then it applies the functions `cv2.findChessboardCorners` and `cv2.drawChessboardCorners` to find chessboard corners and draw them onto the images. `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+It then uses the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function. 
 
-![alt text][image1]
+This function returns camera matrix and distortion coefficients along with a list of chessbord images.
+
+```python
+def calibrate(cal_images, chessboard_nx, chassboard_ny):
+	# ...
+	return mtx, dist, chessboards
+```
+
+### Distortion correction
+
+The `undistort` function takes in an image and uses the `cv2.undistort()` function to remove distortion from the image using the camera matrix and distorion coefficiens calculated in the previous step.
+
+```python
+def undistort(img):
+    """
+    Distortion correction using the parameters gotten after camera calibration
+    returns an undistorted image
+    """
+    return cv2.undistort(img, cal_mtx, cal_dist, None, cal_mtx)
+```
+
+I applied the `undistort` function to the test image and obtained this result: 
+
+![image](output_images/undistort-chessboard.jpg)
 
 ### Pipeline (single images)
 
