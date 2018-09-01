@@ -78,7 +78,7 @@ I applied the `undistort` function to the test image and obtained this result:
 
 #### 1. Distortion correction.
 
-The first step of my pipeline of to applying distortion correction to the input image. I used the method `undistort` described above. 
+The first step of my pipeline is applying distortion correction to the input image. I used the method `undistort` described above. 
 
 Here's an example of its output:
 
@@ -111,11 +111,11 @@ Here's an example of this step's output:
 
 ![alt text](./output_images/thresh-single.jpg)
 
-#### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+#### 3. Perspective transform.
 
 The `birds_eye_view` function takes in an image and applies perspective transform to the image using the OpenCV `cv2.warpPerspective` function.
 
-In order to execute the `cv2.warpPerspective` function I needed to calculate a perspective tranformation matrix `M`. OpenCV provides the `cv2.getPerspectiveTransform` function to do so. The function takes in two parameters `src` and `dest` - source and destination points. I chose the hardcode the source and destination points in the following manner:
+In order to execute the `cv2.warpPerspective` function I needed to calculate a perspective tranformation matrix `M`. OpenCV provides the `cv2.getPerspectiveTransform` function to do so. This function takes in two parameters `src` and `dest` - source and destination points. I chose to hardcode the source and destination points in the following manner:
 
 ```python
 top_y = 450
@@ -150,11 +150,22 @@ I verified that my perspective transform was working as expected by drawing the 
 
 ![alt text](./output_images/conf-perspective-tranform.jpg)
 
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+#### 4. Lane-finding
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+In order to identify lane-line pixels I used the "histogram peaks" and "sliding window" techniques proposed in the lecture 7 of this course.
 
-![alt text][image5]
+The `find_lane_pixels` function combines these techniques in the following manner:
+
+- take a histogram across the bottom part of the image
+- find the histogram peaks to identify starting positions of the left and right lines
+- run sliding window search for each line starting from the positions found in the previous step
+- accumulate "active" pixels (pixels within a sliding window on each iteration) for the left and right lines separately
+- find 2nd order polynomial coefficients using the `np.polyfit` function
+
+Here're a visualization of the algorithm:
+
+![historgram](./output_images/histogram.jpg)
+![lane pixels](./output_images/lane-pixels.jpg)
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
