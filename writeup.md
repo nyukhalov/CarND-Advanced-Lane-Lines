@@ -222,6 +222,7 @@ If the average value is greater than 0, the vehicle is on the left side of the l
 
 I implemented this step in the function `pipeline()` (line 65 to 92). Here is an example of my result on a test images:
 
+![alt text](./output_images/pipeline-final-result.jpg)
 ![alt text](./output_images/pipeline-final-results.jpg)
 ---
 
