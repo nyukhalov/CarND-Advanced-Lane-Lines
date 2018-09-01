@@ -167,16 +167,62 @@ Here're a visualization of the algorithm:
 ![historgram](./output_images/histogram.jpg)
 ![lane pixels](./output_images/lane-pixels.jpg)
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+#### 5. Radius of Curvature of the lane.
 
-I did this in lines # through # in my code in `my_other_file.py`
+To calculate the radius of curvature of the lane we need to calculate the radius of curvature of the left and right lines separately.
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+To calculate the radius of curvature I've implemented the `curvature_radius` function. It takes in two paraters: y-value `y` and polinomial coefficients `fit`.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+```python
+def curvature_radius(y, fit):
+    return (1 + (2*fit[0]*y + fit[1])**2)**(3/2) / np.absolute(2*fit[0])  
+```
 
-![alt text][image6]
+I used the function to calculate the raduis of curvature in meters. To do so I passed `warped_ym_per_px * img_height` as the `y` value, where `warped_ym_per_px` implies the number of meters in a pixel.
 
+Now, having the raduis of curvature of the left and right lines we can calculate the radius of curvature of the lane. It can be calculated as an average of the two:
+
+```python
+def pipeline(img, left_det=None, right_det=None, drawLinePixels=False):
+	# ...
+	left_curverad = left_det.radius_of_curvature
+	right_curverad = right_det.radius_of_curvature
+	curverad = (left_curverad + right_curverad) // 2
+	# ...
+```
+
+#### 5. Position of the vehicle with respect to center.
+
+Same with calculating the position of the vehicle with respect to center.
+
+First I calculated the distance of vehicle center from the left and right lines separately using the `line_base_position_m` function:
+
+```python
+def line_base_position_m(fit):
+    """
+    Calculates distance in meters of vehicle center from the line
+    """
+    line_pos_px = polinomial(img_height, fit)
+    line_base_pos_px = line_pos_px - (img_width / 2)
+    return line_base_pos_px * warped_xm_per_px  
+```
+
+The function will return a positive value for the right line and a negative value for the left. As previously, I will average the two to get ..
+
+```python
+def pipeline(img, left_det=None, right_det=None, drawLinePixels=False):
+	# ...
+	position_m = (right_det.line_base_pos + left_det.line_base_pos) / 2
+	# ...
+```
+
+If the average value is greater than 0, the vehicle is on the left side of the lane's center, otherwise it is on the right side.
+
+#### 6. Drawing results back to the original image.
+
+I implemented this step in the function `pipeline()` (line 65 to 92). Here is an example of my result on a test images:
+
+![alt text](./output_images/pipeline-final-results.jpg)
 ---
 
 ### Pipeline (video)
