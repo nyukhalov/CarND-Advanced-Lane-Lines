@@ -285,3 +285,7 @@ So if the right line fits into the buffer we say the lines are correct.
 In the first project of this course I used a low-pass filter to smooth lines over time. In this project I decided to keep a buffer of recent fits as it was suggested in the `Tips and Tricks` section of the project description.
 
 I started from averaging them to get `best_fit` - the final `fit` value which I use later in the pipeline. This approach did not worked well as it was too lagging. After some experiments I decided to use weighted average where the latest value in the buffer has the biggest weight. Doing so helped to decrease lag and make the algorithm more responsive to changes in video frames.
+
+#### 4. Sliding window
+
+My pipeline performs very bad on the channeling videos. One of the reasons is the sliding window algorithm fails to select pixels of very curved lines. Probably it can be improved by increasing the window's width and decreasing its height. I think `Another Sliding Window Search Approach` presented in the lesson 7 of this course will work better in this case.
