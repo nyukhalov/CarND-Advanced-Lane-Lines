@@ -49,7 +49,7 @@ def calibrate(cal_images, chessboard_nx, chassboard_ny):
 
 ### Distortion correction
 
-The `undistort` function takes in an image and uses the `cv2.undistort()` function to remove distortion from the image using the camera matrix and distorion coefficiens calculated in the previous step.
+The `undistort` function takes in an image and uses the `cv2.undistort()` function to remove distortion from the image using the camera matrix and distorion coefficients calculated in the previous step.
 
 ```python
 def undistort(img):
