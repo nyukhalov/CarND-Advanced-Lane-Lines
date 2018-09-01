@@ -223,8 +223,8 @@ If the average value is greater than 0, the vehicle is on the left side of the l
 
 I implemented this step in the function `pipeline()` (line 65 to 92). Here is an example of my result on a test images:
 
-![alt text](./output_images/pipeline-final-result.jpg)
-![alt text](./output_images/pipeline-final-results.jpg)
+![image](./output_images/pipeline-final-result.jpg)
+![image](./output_images/pipeline-final-results.jpg)
 ---
 
 ### Pipeline (video)
@@ -266,8 +266,26 @@ Here's a [link to my video result](./output_videos/project_video.mp4)
 
 ---
 
-### Discussion
+### Discussion 
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+#### 1. Color and Gradient thresholding
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The approach of color and gradient thresholding performed very well. Its flexibility allows one to create variety of image masks to select desired features. However it has a drawback - there are no strict rules how to apply it, so one has to rely on intuition and luck to find the right combination of different color channels, gradients and thresholds.
+
+My solution does not work well under some lighting conditions, and I would like to spend more time to find the right combinations of filters.
+
+#### 2. Sanity check
+
+As it turned out one can't simply compare the radius of curvature of the left and right lines. There're were situation when one line could have the radius equal 60,000 m, while another had the radius equal 4,500m (different order of magnitude). Hovewer, for humans the lines would look very similar.
+
+After many experiments I ended up with the simplified approach: I check if one line can fit into a buffer created from another line +/- some margin (e.g. +/- 100px).
+
+![image](./output_images/topology_check.jpg)
+
+There're four lines on the graph above:
+
+- blue line is the left lane line
+- green line is the right lane line
+- two red lines form a validation buffer
+
+So if the right line fits into the buffer we say the lines are correct.
