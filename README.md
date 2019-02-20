@@ -20,8 +20,6 @@ The goals / steps of this project are the following:
 
 The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames. 
 
-# Results
-
 ## Source code and output files.
 
 The whole project was implemented using the IPython notebook located in the [./Project2.ipynb](./Project2.ipynb) file. The output images and video are located in the `./output_images/` and `./output_videos/` directories respectively.
